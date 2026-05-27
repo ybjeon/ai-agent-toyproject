@@ -1,0 +1,7 @@
+mcp
+langchain
+langchain-ollama
+fastapi
+langserve[all]
+uvicorn
+ollama
