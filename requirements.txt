@@ -1,6 +1,8 @@
 mcp
 langchain
 langchain-ollama
+langchain-mcp-adapters
+langgraph
 fastapi
 langserve[all]
 uvicorn
