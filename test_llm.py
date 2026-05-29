@@ -13,8 +13,11 @@ llm = ChatOllama(model=MODEL, base_url=OLLAMA_BASE_URL)
 
 def single_turn(user_message: str) -> str:
     """Single turn: Send one message and receive a response."""
+    print(f">>>>>>> User: {user_message}")
     response = llm.invoke(user_message)
-    return response.content
+    assistant_message = response.content
+    print(f"Assistant: {assistant_message}")
+    return assistant_message
 
 
 def multi_turn(assistant_messages: list[str]=None):
@@ -34,7 +37,7 @@ def multi_turn(assistant_messages: list[str]=None):
                 break
         else: 
             user_input = assistant_messages[i]
-            print(f"\nUser: {user_input}")
+            print(f">>>>>>> User: {user_input}")
 
         history.append(HumanMessage(content=user_input))
 
@@ -90,14 +93,14 @@ def test_embedding(query):
 if __name__ == "__main__":
     # Single turn test
     print("=== Single Turn Test ===")
-    result = single_turn("Hello! Introduce yourself briefly.")
-
-    print(f"Response: {result}\n")
-
+    single_turn("Hello! Introduce yourself briefly.")
+    
     # Multi turn chat
+    print("\n")
     print("=== Multi Turn Chat ===")
     multi_turn(['My name is Alice', 'What is my name?'])
 
     # Embedding vector test
+    print("\n")
     print("=== Embedding Vector Test ===")
     test_embedding("Tell me about dogs")
