@@ -10,6 +10,7 @@ from langchain_ollama import ChatOllama
 # ── Config ────────────────────────────────────────────────────────
 OLLAMA_BASE_URL = "http://localhost:11434"
 MODEL = "qwen2.5:7b"
+MCP_SERVER_URL = "http://localhost:8000/mcp" 
 
 # ── Logger ────────────────────────────────────────────────────────
 logging.basicConfig(
@@ -37,16 +38,29 @@ llm = ChatOllama(model=MODEL, base_url=OLLAMA_BASE_URL)
 
 
 # ── Main ─────────────────────────────────────────────────────────
-async def main() -> None:
-    client = MultiServerMCPClient(
-        {
-            "example-server": {
-                "command": "python3",
-                "args": ["mcp_server.py"],
-                "transport": "stdio",
+async def main(transport: str) -> None:
+    if transport == "stdio":
+        client = MultiServerMCPClient(
+            {
+                "example-server": {
+                    "command": "python3",
+                    "args": ["mcp_server.py", transport],
+                    "transport": transport,
+                }
             }
-        }
-    )
+        )
+    elif transport == "streamable-http":
+        client = MultiServerMCPClient(
+            {
+                "example-server": {
+                    "url": MCP_SERVER_URL,
+                    "transport": transport,
+                }
+            }
+        )
+    else:
+        raise ValueError(f"Unsupported transport: {transport}")
+
     tools = await client.get_tools()
     logger.info("Loaded %d tool(s) from MCP server: %s", len(tools), [t.name for t in tools])
 
@@ -69,4 +83,6 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    import sys
+    transport = sys.argv[1] if len(sys.argv) > 1 else "streamable-http"
+    asyncio.run(main(transport))

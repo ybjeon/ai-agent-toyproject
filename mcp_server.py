@@ -35,4 +35,6 @@ def get_config() -> str:
 
 
 if __name__ == "__main__":
-    mcp.run(transport="stdio")
+    import sys
+    transport = sys.argv[1] if len(sys.argv) > 1 else "streamable-http"  # streamable-http / stdio
+    mcp.run(transport=transport)
